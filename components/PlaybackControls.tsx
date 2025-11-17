@@ -30,13 +30,23 @@ export function PlaybackControls({
   onSpeedChange,
 }: PlaybackControlsProps) {
   const [showSettings, setShowSettings] = useState(false);
+  const [isHoveringProgress, setIsHoveringProgress] = useState(false);
+  const [hoverPosition, setHoverPosition] = useState(0);
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const tick = parseInt(e.target.value, 10);
     onSeek(tick);
   };
 
+  const handleProgressHover = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = (x / rect.width) * 100;
+    setHoverPosition(Math.max(0, Math.min(100, percentage)));
+  };
+
   const progress = totalTicks > 0 ? (currentTick / totalTicks) * 100 : 0;
+  const hoverTick = Math.round((hoverPosition / 100) * totalTicks);
 
   const speedOptions = [0.25, 0.5, 1, 2, 5, 10];
 
@@ -89,19 +99,52 @@ export function PlaybackControls({
           <span>Progress</span>
           <span>{progress.toFixed(1)}%</span>
         </div>
-        <div className="relative h-2 bg-gray-200 rounded-full">
+        <div
+          className="relative group cursor-pointer"
+          onMouseEnter={() => setIsHoveringProgress(true)}
+          onMouseLeave={() => setIsHoveringProgress(false)}
+          onMouseMove={handleProgressHover}
+        >
+          {/* Hover tooltip */}
+          {isHoveringProgress && (
+            <div
+              className="absolute bottom-full mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap pointer-events-none"
+              style={{ left: `${hoverPosition}%`, transform: 'translateX(-50%)' }}
+            >
+              Tick: {hoverTick.toLocaleString()}
+            </div>
+          )}
+
+          {/* Progress bar track */}
           <div
-            className="absolute inset-y-0 left-0 bg-[#5FAAF7] rounded-full transition-all duration-200"
-            style={{ width: `${progress}%` }}
-          />
-          <input
-            type="range"
-            min="0"
-            max={totalTicks - 1}
-            value={currentTick}
-            onChange={handleSliderChange}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
+            className={`relative bg-gray-200 rounded-full transition-all ${
+              isHoveringProgress ? 'h-3' : 'h-2'
+            }`}
+          >
+            {/* Hover preview (shows where you'll seek to) */}
+            {isHoveringProgress && (
+              <div
+                className="absolute inset-y-0 left-0 bg-gray-300 rounded-full"
+                style={{ width: `${hoverPosition}%` }}
+              />
+            )}
+
+            {/* Current progress */}
+            <div
+              className="absolute inset-y-0 left-0 bg-[#5FAAF7] rounded-full transition-all duration-200"
+              style={{ width: `${progress}%` }}
+            />
+
+            {/* Invisible range input for interaction */}
+            <input
+              type="range"
+              min="0"
+              max={totalTicks - 1}
+              value={currentTick}
+              onChange={handleSliderChange}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
         </div>
       </div>
 

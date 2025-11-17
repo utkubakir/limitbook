@@ -17,9 +17,10 @@ interface HistoryChartProps {
   sessionId: string;
   currentTick: number;
   totalTicks: number;
+  onSeek: (tick: number) => void;
 }
 
-export function HistoryChart({ sessionId, currentTick }: HistoryChartProps) {
+export function HistoryChart({ sessionId, currentTick, onSeek }: HistoryChartProps) {
   const [history, setHistory] = useState<HistoryPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalTicks, setTotalTicks] = useState(0);
@@ -85,6 +86,13 @@ export function HistoryChart({ sessionId, currentTick }: HistoryChartProps) {
         <AreaChart
           data={history}
           margin={{ top: 10, right: 30, left: 70, bottom: 30 }}
+          onClick={(data) => {
+            if (data && data.activeLabel) {
+              const clickedTick = Number(data.activeLabel);
+              onSeek(clickedTick);
+            }
+          }}
+          style={{ cursor: 'pointer' }}
         >
           <defs>
             <linearGradient id="bidGradient" x1="0" y1="0" x2="0" y2="1">

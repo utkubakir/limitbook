@@ -220,6 +220,7 @@ export function AppShell({
               sessionId={sessionId}
               currentTick={currentTick}
               totalTicks={totalTicks}
+              onSeek={onSeek}
             />
           </div>
         </div>
