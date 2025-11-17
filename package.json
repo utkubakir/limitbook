@@ -9,9 +9,12 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "csv-parse": "^5.5.5",
+    "jschardet": "^3.1.4",
     "next": "16.0.3",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "recharts": "^2.12.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Order Book Visualizer
 
-## Getting Started
+Visualize financial order book snapshots from CSV files. Upload market data and scrub through time to examine order book states with interactive charts and playback controls.
 
-First, run the development server:
+## Features
+
+- Upload large CSV files (1.5M+ rows)
+- Seek to any point in time instantly
+- Horizontal bar chart showing bid/ask depth
+- Time-series chart displaying historical liquidity
+- Playback controls (play, pause, jump, seek)
+- Real-time latency display
+
+## Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## CSV Format
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Required columns (case-insensitive, whitespace-tolerant):
 
-## Learn More
+- `ts_recv` - Receive timestamp (ISO8601)
+- `ts_event` - Event timestamp (ISO8601)
+- `bid_px_00` through `bid_px_09` - Bid price levels
+- `ask_px_00` through `ask_px_09` - Ask price levels
+- `bid_sz_00` through `bid_sz_09` - Bid sizes
+- `ask_sz_00` through `ask_sz_09` - Ask sizes
 
-To learn more about Next.js, take a look at the following resources:
+Additional columns are ignored.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Example:
+```csv
+ts_recv,ts_event,bid_px_00,ask_px_00,bid_sz_00,ask_sz_00,...
+2025-06-11T00:00:00.000Z,2025-06-10T23:52:40.065Z,61.00,61.70,1,1,...
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Notes:
+- Each row is a complete snapshot (not incremental updates)
+- Missing or zero values are skipped
+- Up to 10 levels per side supported
 
-## Deploy on Vercel
+## Usage
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Upload CSV file
+2. Wait for processing
+3. Use playback controls to navigate
+4. Click "New Upload" to reset
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS v4
+- Recharts
+- csv-parse
+
+## Documentation
+
+See [DESIGN.md](./DESIGN.md) for architecture and design decisions.
+
+## License
+
+MIT
